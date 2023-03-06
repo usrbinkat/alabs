@@ -16,6 +16,8 @@ func main() {
 	}
 
 	f := os.Args[1]
+
+	// TODO: evaluate compression type and add support for both gzip, bzip2, and xz
 	s, err := sha1Sum(f)
 	if err != nil {
 		log.Fatal(err)
