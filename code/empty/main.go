@@ -19,10 +19,12 @@ func main() {
 	log.Logger = log.Output(os.Stderr)
 
 	v = 7
-	logIt(zerolog.InfoLevel, "v is", v)
+	valueType := typeInfo(v)
+	logIt(zerolog.InfoLevel, valueType, "v is", v)
 
 	v = "hello"
-	logIt(zerolog.DebugLevel, "Debug: v is", v)
+	valueType = typeInfo(v)
+	logIt(zerolog.DebugLevel, valueType, "Debug: v is", v)
 }
 
 func typeInfo(value any) string {
@@ -37,17 +39,16 @@ func typeInfo(value any) string {
 }
 
 // Level based logging
-func logIt(level zerolog.Level, msg string, value any) {
+func logIt(level zerolog.Level, t string, msg string, value any) {
 
 	if level == zerolog.DebugLevel && !debugMode {
 		return
 	}
 
-	valueType := typeInfo(value)
-	m := fmt.Sprintf("%s %s", msg, valueType)
+	m := fmt.Sprintf("%s %s", msg, t)
 
 	info := zerolog.Dict().
-		Str("type", valueType).
+		Str("type", t).
 		Interface("log", m)
 
 	event := log.WithLevel(level).Dict("msg", info)
