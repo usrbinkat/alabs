@@ -10,14 +10,8 @@ import (
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
-	//var i1 Loc
-	//fmt.Printf("i1: %#v\n", i1)
-
-	//i2 := Loc{1, 2}
-	//fmt.Printf("i1: %#v\n", i2)
-
-	i3, error := newLoc(200, 300)
-	checkErr(1, error, "newLoc failed")
+	i3, error := newGameItem(200, 300)
+	checkErr(1, error, "newGameItem failed")
 
 	i3.Move(10, 10)
 	checkErr(0, error, "Move failed")
@@ -26,12 +20,12 @@ func main() {
 
 	p1 := Player{
 		Name: "Bob",
-		Loc: Loc{
+		GameItem: GameItem{
 			X: 10,
 			Y: 20,
 		},
 	}
-	log.Printf(fmt.Sprintf("p1: %#v, xy: %#v", p1.Name, p1.Loc))
+	log.Printf(fmt.Sprintf("p1: %#v, xy: %#v", p1.Name, p1.GameItem))
 
 	ms := []mover{
 		i3,
@@ -44,30 +38,25 @@ func main() {
 	}
 
 	log.Printf("Jade: %d", Jade)
-}
 
-func (k Key) string() string {
-	switch k {
-	case Jade:
-		return "Jade"
-	case Copper:
-		return "Copper"
-	case Crystal:
-		return "Crystal"
-	default:
-		return "Unknown"
+	if err := p1.FoundKey(Jade); err != nil {
+		log.Error().Err(err).Msg("Failed to add key")
 	}
+	log.Printf("p1 keys: %d", p1.Keys)
 }
 
 func checkErr(lvl int, err error, msg string) {
-	if err != nil {
-		if lvl == 1 {
-			log.Fatal().Err(err).Msg(msg)
-		} else if lvl == 2 {
-			log.Error().Err(err).Msg(msg)
-		} else {
-			log.Warn().Err(err).Msg(msg)
-		}
+	if err == nil {
+		return
+	}
+
+	switch lvl {
+	case 1:
+		log.Fatal().Err(err).Msg(msg)
+	case 2:
+		log.Error().Err(err).Msg(msg)
+	default:
+		log.Warn().Err(err).Msg(msg)
 	}
 }
 
@@ -77,12 +66,12 @@ func moveAll(ms []mover, x, y int) {
 	}
 }
 
-func newLoc(x, y int) (*Loc, error) {
+func newGameItem(x, y int) (*GameItem, error) {
 	if x < 0 || x > maxX || y < 0 || y > maxY {
 		return nil, fmt.Errorf("%d/%d out of bounds: %d/%d", x, y, maxX, maxY)
 	}
 
-	i := Loc{
+	i := GameItem{
 		X: x,
 		Y: y,
 	}
@@ -90,7 +79,7 @@ func newLoc(x, y int) (*Loc, error) {
 	return &i, nil
 }
 
-func (i *Loc) Move(x, y int) {
+func (i *GameItem) Move(x, y int) {
 	i.X += x
 	i.Y += y
 }
@@ -100,25 +89,38 @@ const (
 	maxY = 600
 )
 
-type Key int
+func (p *Player) FoundKey(k Key) error {
+	if k < Jade || k >= invalidKey {
+		return fmt.Errorf("invalid key: %#v", k)
+	}
 
-const (
-	Jade Key = iota + 1
-	Copper
-	Crystal
-)
+	if !containsKey(p.Keys, k) {
+		p.Keys = append(p.Keys, k)
+	}
+	return nil
+}
+
+func containsKey(keys []Key, k Key) bool {
+	for _, key := range keys {
+		if key == k {
+			return true
+		}
+	}
+	return false
+}
 
 type mover interface {
 	Move(int, int)
 }
 
-// Loc is an item in the game
-type Loc struct {
+// GameItem represents an item in the game with X and Y coordinates.
+type GameItem struct {
 	X int
 	Y int
 }
 
 type Player struct {
 	Name string
-	Loc
+	Keys []Key
+	GameItem
 }
