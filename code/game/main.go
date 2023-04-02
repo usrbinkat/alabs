@@ -37,12 +37,16 @@ func main() {
 		log.Printf("m: %#v", m)
 	}
 
+	log.Printf(fmt.Sprintf("p1: %#v, xy: %#v", p1.Name, p1.GameItem))
+
 	log.Printf("Jade: %d", Jade)
 
 	if err := p1.FoundKey(Jade); err != nil {
 		log.Error().Err(err).Msg("Failed to add key")
 	}
 	log.Printf("p1 keys: %d", p1.Keys)
+
+	log.Printf(fmt.Sprintf("p1: %#v, xy: %#v", p1.Name, p1.GameItem))
 }
 
 func checkErr(lvl int, err error, msg string) {

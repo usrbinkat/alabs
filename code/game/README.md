@@ -35,10 +35,27 @@ cd alabs/code/game
 In the project directory, run the following command:
 
 ```bash
-go run main.go key.go
+clear; 2>&1 go run main.go key.go | jq .message | sed 's/\\//g'
 ```
 
 The output will show the game items, player, and movement:
+
+```log
+"i3: &main.GameItem{X:210, Y:310}"
+"p1: "Bob", xy: main.GameItem{X:10, Y:20}"
+"m: &main.GameItem{X:210, Y:310}"
+"m: &main.Player{Name:"Bob", Keys:[]main.Key(nil), GameItem:main.GameItem{X:10, Y:20}}"
+"p1: "Bob", xy: main.GameItem{X:10, Y:20}"
+"Jade: 1"
+"p1 keys: [1]"
+"p1: "Bob", xy: main.GameItem{X:10, Y:20}"
+```
+
+Alternate json output:
+
+```bash
+go run main.go key.go
+```
 
 ```json
 {"level":"debug","time":"123456","message":"i3: &main.GameItem{X:210, Y:310}"}
