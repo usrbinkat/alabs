@@ -72,7 +72,11 @@ func logIt(level zerolog.Level, t string, msg string, value any) {
 	event.Msg("")
 }
 
-func max[T int | float64](nums []T) T {
+type Numbers interface {
+	int | float64
+}
+
+func max[T Numbers](nums []T) T {
 	if len(nums) == 0 {
 		return 0
 	}
