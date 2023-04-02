@@ -9,7 +9,7 @@ import (
 
 var i any
 
-func main() {
+func alt() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
 	i = 7

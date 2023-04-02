@@ -25,6 +25,21 @@ func main() {
 	v = "hello"
 	valueType = typeInfo(v)
 	logIt(zerolog.DebugLevel, valueType, "Debug: v is", v)
+
+	mIntSlice := []int{1, 2, 3, 4, 5}
+	mInt := maxInts(mIntSlice)
+	valueType = typeInfo(mInt)
+	logIt(zerolog.InfoLevel, valueType, "maxInts: mInt is", mInt)
+
+	mFloat64Slice := []float64{1.1, 2.2, 3.3, 4.4, 5.5}
+	mFloat64 := maxFloat64s(mFloat64Slice)
+	valueType = typeInfo(mFloat64)
+	logIt(zerolog.InfoLevel, valueType, "maxFloat64s: mFloat64 is", mFloat64)
+
+	mMax := []float64{1, 2.2, 3, 4.4, 5, 5.9}
+	m := max(mMax)
+	valueType = typeInfo(m)
+	logIt(zerolog.InfoLevel, valueType, "max: m is", m)
 }
 
 func typeInfo(value any) string {
@@ -33,6 +48,8 @@ func typeInfo(value any) string {
 		return "int"
 	case string:
 		return "str"
+	case float64:
+		return "float64"
 	default:
 		return "unk"
 	}
@@ -45,7 +62,7 @@ func logIt(level zerolog.Level, t string, msg string, value any) {
 		return
 	}
 
-	m := fmt.Sprintf("%s %s", msg, t)
+	m := fmt.Sprintf("%s %v", msg, value)
 
 	info := zerolog.Dict().
 		Str("type", t).
@@ -53,4 +70,46 @@ func logIt(level zerolog.Level, t string, msg string, value any) {
 
 	event := log.WithLevel(level).Dict("msg", info)
 	event.Msg("")
+}
+
+func max[T int | float64](nums []T) T {
+	if len(nums) == 0 {
+		return 0
+	}
+
+	max := nums[0]
+	for _, n := range nums {
+		if n > max {
+			max = n
+		}
+	}
+	return max
+}
+
+func maxInts(nums []int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+
+	max := nums[0]
+	for _, n := range nums {
+		if n > max {
+			max = n
+		}
+	}
+	return max
+}
+
+func maxFloat64s(nums []float64) float64 {
+	if len(nums) == 0 {
+		return 0
+	}
+
+	max := nums[0]
+	for _, n := range nums {
+		if n > max {
+			max = n
+		}
+	}
+	return max
 }
